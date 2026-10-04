@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hungarian: lesson cards and grammar</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8eee7;--ink:#17352a;--card:#fbfcf9;--deep:#1f4d3a;--on:#e8f1ea;--red:#a8322a;--mut:#5d7468;--line:#c5d2c8;--ok:#cfe6d6;--bad:#f3d3cf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a15;--ink:#e3eee6;--card:#1a2a22;--deep:#2f6e53;--on:#f1f7f2;--red:#e0675d;--mut:#92aa9c;--line:#2c4237;--ok:#24523b;--bad:#5a2c28}}
+:root[data-theme="dark"]{--bg:#101a15;--ink:#e3eee6;--card:#1a2a22;--deep:#2f6e53;--on:#f1f7f2;--red:#e0675d;--mut:#92aa9c;--line:#2c4237;--ok:#24523b;--bad:#5a2c28}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+h1{font:700 24px/1.2 "Source Serif 4",Georgia,serif;margin:4px 0 14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:4px}
+.chip{white-space:nowrap;border:1px solid var(--line);background:transparent;color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit}
+.chip.on{background:var(--deep);border-color:var(--deep);color:var(--on)}
+.opts{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0}
+.link{background:none;border:0;color:var(--deep);font:600 14px inherit;padding:6px 0;text-decoration:underline}
+:root:not([data-theme="light"]) .link{color:var(--mut)}
+.meta,.hint{color:var(--mut);font-size:14px;margin:12px 0 0}
+.card{position:relative;height:330px;margin:12px 0 16px;transition:transform .45s;transform-style:preserve-3d;cursor:pointer;perspective:800px}
+.card.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:10px}
+.front{background:var(--card);border:1.5px solid var(--line)}
+.back{background:var(--deep);color:var(--on);transform:rotateY(180deg)}
+.back small{opacity:.75}
+.w.s1{font-size:24px}.w.s2{font-size:19px}.ans{font-size:16px;line-height:1.4}.face{overflow:auto}
+.w{font:700 32px/1.15 "Source Serif 4",Georgia,serif}
+.row{display:flex;gap:10px}
+.btn{flex:1;padding:14px;border-radius:12px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 16px inherit}
+.btn.go{background:var(--deep);border-color:var(--deep);color:var(--on)}
+.btn.no{border-color:var(--red);color:var(--red)}
+.qs{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:28px 16px;text-align:center;margin:12px 0}
+.o2{display:grid;gap:8px;margin-bottom:12px}
+.opt{padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;text-align:left}
+.opt.ok{background:var(--ok);border-color:var(--deep)}
+.opt.bad{background:var(--bad);border-color:var(--red)}
+.done{text-align:center;padding:32px 0}
+.empty{color:var(--mut);padding:24px 0}
+button:focus-visible,.card:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style></head>
+<body><div class="wrap"><h1>Hungarian: lesson cards and grammar</h1><div id="app"></div></div>
+<script>
+const RAW=`F|anya|mother
+F|apa|father
+F|édesanya|mother (warm)
+F|édesapa|father (warm)
+F|nagypapa / nagyapa|grandfather
+F|nagymama / nagyanya|grandmother
+F|dédanya|great-grandmother
+F|szülő|parent
+F|testvér|sibling
+F|féltestvér|half-sibling
+F|nővér|older sister (also nurse)
+F|húg|younger sister
+F|báty|older brother
+F|öcs|younger brother
+F|férj|husband
+F|feleség|wife
+F|gyerek|child
+F|fiam|my son
+F|lányom|my daughter
+F|barát|friend / boyfriend
+F|barátnő|female friend / girlfriend
+F|felmenő|ancestor
+F|apai ág|paternal side
+F|anyai ág|maternal side
+F|egyedüli gyerek|only child
+P|mérnök|engineer
+P|szoftvermérnök|software engineer
+P|tanár|teacher
+P|író|writer
+P|újságíró|journalist
+P|színész|actor
+P|festő|painter
+P|kertész|gardener
+P|szakács|cook
+P|asztalos|carpenter
+P|villanyszerelő|electrician
+P|vállalkozó|entrepreneur
+P|munkanélküli|unemployed
+P|foglalkozás|occupation
+P|nő|woman
+P|férfi|man
+P|ember|person
+P|állampolgár|citizen
+P|kettős állampolgár|dual citizen
+P|magyar származású|of Hungarian origin
+P|házas|married
+P|egyedülálló|single
+P|név|name
+P|lakóhely|place of residence
+P|munkahely|workplace
+P|aláírás|signature
+A|gyors|fast
+A|lassú|slow
+A|új|new
+A|régi|old (things)
+A|öreg|old (people)
+A|kicsi|small
+A|nagy|big
+A|nagyon|very
+A|szép|beautiful
+A|kedves|kind / dear
+A|kedvenc|favorite
+A|fáradt|tired
+A|boldog|happy
+A|nyugodt|calm
+A|nehéz|hard / difficult
+A|vicces|funny
+A|jóképű|good-looking
+A|csinos|pretty
+A|tiszta|clean / clear
+A|logikus|logical
+A|zöld|green
+A|piros|red
+A|vörös|deep red
+A|fehér|white
+A|fekete|black
+A|kék|blue
+A|barna|brown
+A|szürke|gray
+A|szőke|blonde
+A|haj|hair
+A|szem|eye
+A|arc|face
+A|kéz|hand
+A|szakáll|beard
+T|mindig|always
+T|soha|never
+T|gyakran|often
+T|néha|sometimes
+T|naponta|daily
+T|hetente|weekly
+T|havonta|monthly
+T|évente|yearly
+T|délután|afternoon
+T|hétköznap|weekday
+T|hétvége|weekend
+T|munkanap|workday
+T|perc|minute
+T|óra|hour / clock / lesson
+T|idő|time / weather
+T|jövő|future
+T|jövő héten|next week
+T|egész nap|all day
+T|most éppen|right now
+T|még nem|not yet
+T|eső / esős|rain / rainy
+T|nap / napos|sun / sunny
+T|köd / ködös|fog / foggy
+T|felhő / felhős|cloud / cloudy
+T|szél / szeles|wind / windy
+T|hűvös|cool / chilly
+T|dél|south
+T|nyugat|west
+T|kelet|east
+H|szoba|room
+H|lakás|apartment
+H|ház|house
+H|konyha|kitchen
+H|fürdőszoba|bathroom
+H|emelet|floor (storey)
+H|szekrény|cabinet / wardrobe
+H|kert|garden
+H|asztal|table
+H|autó|car
+H|esernyő|umbrella
+H|cipő|shoe(s)
+H|papucs|slipper(s)
+H|kulcs|key
+H|táska|bag
+H|számítógép|computer
+H|gép|machine
+H|mosógép|washing machine
+H|mosogatógép|dishwasher
+H|nyomtató|printer
+H|repülőgép|airplane
+H|könyv|book
+H|újság|newspaper
+H|levél|letter / leaf
+H|útlevél|passport
+H|kép|picture
+H|fénykép|photo
+H|festmény|painting
+H|pénz|money
+H|bögre|mug
+H|csésze|cup
+H|jegy|ticket
+H|virág|flower
+H|ruha|dress
+H|póló|T-shirt
+H|nadrág|trousers
+H|macska|cat
+H|kutya|dog
+E|étel|food / dish
+E|étterem|restaurant
+E|reggeli|breakfast
+E|ebéd|lunch
+E|vacsora|dinner
+E|leves|soup
+E|pirítós|toast
+E|zabkása|oatmeal
+E|tükörtojás|fried egg
+E|hal|fish
+E|rizs|rice
+E|szendvics|sandwich
+E|saláta|salad
+E|pörkölt|paprikash stew
+E|burgonya / krumpli|potato
+E|paradicsom|tomato
+E|sajt|cheese
+E|tej|milk
+E|tea|tea
+E|kávé|coffee
+E|kávézó|café
+E|bor|wine
+E|sör|beer
+E|alma|apple
+E|gyümölcs|fruit
+E|lángos|fried dough bread
+E|csalamádé|pickled mixed vegetables
+E|hurka|blood or liver sausage
+V|élni / lakni|to live
+V|tudni|to know / can
+V|tanulni|to learn / study
+V|beszélni|to speak
+V|beszélgetni|to chat
+V|mesélni|to tell / talk about
+V|csinálni|to do / make
+V|dolgozni|to work (people)
+V|működni|to work (objects)
+V|bemutatkozni|to introduce oneself
+V|örülni|to be glad
+V|szeretni|to like / love
+V|utálni|to hate
+V|látni|to see
+V|nézni|to watch
+V|olvasni|to read
+V|írni|to write
+V|főzni|to cook
+V|enni|to eat
+V|inni|to drink
+V|mosni|to wash
+V|mosogatni|to wash dishes
+V|takarítani|to clean
+V|javítani|to fix / repair
+V|vezetni|to drive
+V|menni|to go
+V|utazni|to travel
+V|járni|to go regularly / attend
+V|tervezni|to plan / design
+V|fázni|to feel cold
+V|futni|to run
+V|ülni|to sit
+V|aludni|to sleep
+V|úszni|to swim
+V|fürdeni|to bathe / swim
+V|zongorázni|to play piano
+V|gitározni|to play guitar
+V|festeni|to paint
+V|rajzolni|to draw
+V|kertészkedni|to garden
+V|barkácsolni|to do DIY
+V|hallgatni|to listen
+V|viselni|to wear
+V|venni|to buy
+V|küldeni|to send
+V|segíteni|to help
+V|mondani|to say
+V|jelenteni|to mean
+V|találkozni|to meet
+V|remélni|to hope
+V|felkelni|to get up
+W|város|city
+W|Magyarország|Hungary
+W|Horvátország|Croatia
+W|Olaszország|Italy
+W|Oroszország|Russia
+W|Amerika|America
+W|Egyesült Államok|United States
+W|állam|state
+W|megye|county
+W|nagykövetség|embassy
+W|repülőtér|airport
+W|tér|square
+W|tenger|sea / ocean
+W|strand|beach
+W|uszoda|swimming pool
+W|edzőterem|gym
+W|színház|theatre
+W|közel|close (to)
+W|távolság|distance
+W|otthon|at home
+W|itthon|at home (where I live)
+W|itt|here
+W|ott|over there
+W|út|road / trip
+G|de|but
+G|is|also / too
+G|hanem|but rather
+G|nincs|there is no
+G|sok|many
+G|egy kicsit|a little bit
+G|sajnos|unfortunately
+G|talán|maybe
+G|szerintem|in my opinion
+G|azt hiszem|I think / I believe
+G|Hol? / Ki? / Miért? / Hány?|Where? / Who? / Why? / How many?
+G|-ul / -ül|in (a language)
+G|-val / -vel|with / by
+G|-ról / -ről|about / from
+G|-nak / -nek|to / for (possessor)
+G|-ként|as (a role)
+G|-tól / -től|from
+G|-ig|until
+G|-ra / -re|to / onto
+G|-szor / -szer / -ször|... times
+G|-ni|to (infinitive)
+G|-tam / -tem|I did ... (past, 1st person singular)
+G|vagyok, vagy, van, vagyunk, vagytok, vannak|to be: I, you, he/she, we, you (pl.), they
+G|élek, élsz, él, élünk, éltek, élnek|to live: I, you, he/she, we, you (pl.), they
+G|eszem, eszel, eszik, eszünk, esztek, esznek|to eat: I, you, he/she, we, you (pl.), they
+G|iszom, iszol, iszik, iszunk, isztok, isznak|to drink: I, you, he/she, we, you (pl.), they
+S|Nem újságíró vagyok, hanem tanár.|I'm not a journalist, I'm a teacher.
+S|Amerikai/Kanadai vagyok, de magyar származású.|I'm American/Canadian, but of Hungarian origin.
+S|Beszélek magyarul.|I speak Hungarian.
+S|Tanulok magyarul.|I'm learning Hungarian.
+S|Tudok magyarul.|I can speak Hungarian.
+S|Sokat tanulok magyarul.|I study Hungarian a lot.
+S|A magyar logikus.|Hungarian is logical.
+S|Az anyanyelvem angol.|My native language is English.
+S|Egyedüli gyerek vagyok.|I'm an only child.
+S|Három bátyám van.|I have three older brothers.
+S|Két öcsém van.|I have two younger brothers.
+S|Nincs gyerekem.|I don't have children.
+S|Házas vagyok.|I'm married.
+S|Egyedülálló vagyok.|I'm single.
+S|A nevem …|My name is …
+S|A leánykori nevem …|My maiden name is …
+S|Szoftvermérnök vagyok.|I'm a software engineer.
+S|Tanárként dolgozom.|I work as a teacher.
+S|Egy irodában dolgozom.|I work in an office.
+S|Öt napot dolgozom egy héten.|I work five days a week.
+S|Szeretnék orvos lenni.|I would like to be a doctor.
+S|A szemem zöld.|My eyes are green.
+S|Vörös hajam van.|I have red hair.
+S|Ősz hajam van.|I have gray hair (lit. autumn hair).
+S|Melegem van.|I'm hot.
+S|Meleg vagyok.|I'm gay (not "I'm hot"!).
+S|Fázom.|I feel cold.
+S|A kezeim mindig fáznak.|My hands are always cold.
+S|Három macskám van.|I have three cats.
+S|De lesz magyar állampolgárságom.|But I'll have Hungarian citizenship.
+S|Magyarországnak 19 megyéje van.|Hungary has 19 counties.
+S|Esik az eső.|It's raining.
+S|Szép idő van.|The weather is nice.
+S|Minden rendben.|Everything is alright.
+S|Örülök a találkozásnak.|Nice to meet you.
+S|Hány óra van?|What time is it?
+S|Megyek aludni.|I'm going to sleep.
+S|Kérek egy kávét.|I'd like a coffee.
+S|Szeretem Budapestet.|I love Budapest.
+S|Tudok gitározni.|I can play the guitar.
+S|Utálok kertészkedni.|I hate gardening.
+S|Szeretek fürdeni a tengerben.|I like swimming in the sea.
+S|Szeretnék Magyarországra utazni a jövőben.|I'd love to travel to Hungary in the future.
+S|Van egy barátom, aki kék inget visel.|I have a friend who wears a blue shirt.
+1|Mi a neve? / Hogy hívják?|What is your name?|A nevem Tamara. (My name is Tamara.)
+1|Mi a foglalkozása? / Mivel foglalkozik?|What is your occupation?|Szoftvermérnök vagyok. (I'm a software engineer.)
+1|Hol él? / Hol lakik?|Where do you live?|Hamiltonban élek. (I live in Hamilton.)
+1|Mikor született?|When were you born?|1988. augusztus 27-én (huszonhetedikén) születtem. (I was born on 27 August 1988.)
+1|Ön magyar származású?|Are you of Hungarian origin?|Igen, magyar származású vagyok. (Yes, I'm of Hungarian origin.)
+1|Ki volt magyar a családjában? / Meséljen a magyar származásáról!|Who was Hungarian in your family? / Tell me about your Hungarian origin.|Anyai ágról a dédanyám magyar volt. (On my mother's side, my great-grandmother was Hungarian.)
+1|Van testvére?|Do you have siblings?|Van három bátyám. (I have three older brothers.)
+1|Házas?|Are you married?|Nem vagyok házas. (I'm not married.)
+1|Milyen nyelven beszél?|What languages do you speak?|Beszélek magyarul, angolul, németül és egy kicsit koreaiul. (Model answer: I speak Hungarian, English, German and a little Korean.)
+2|Hol dolgozik?|Where do you work?|Egy irodában dolgozom. (I work in an office.)
+2|Hol ebédel?|Where do you eat lunch?|Otthon ebédelek vagy egy kávézóban. (At home or in a café.)
+2|Mit csinál délután?|What do you do in the afternoon?|Meetingen vagyok és dolgozok. (I'm in a meeting and working.)
+2|Mikor vacsorázik?|When do you eat dinner?|Általában 8 órakor vacsorázok. (Usually at 8 o'clock.)
+2|Mit reggelizik? / Mit eszik reggelire?|What do you have for breakfast?|Tükörtojást és pirítóst reggelizem. (Fried eggs and toast.)
+2|Mit ebédel? / Mit eszik ebédre?|What do you have for lunch?|Szendvicset vagy salátát ebédelek. (A sandwich or a salad.)
+2|Mit vacsorázik? / Mit eszik vacsorára?|What do you have for dinner?|Pörköltet vacsorázok. (Paprikash stew.)
+2|Mit csinál este?|What do you do in the evening?|Gitározom vagy koncertre megyek. (I play guitar or go to a concert.)
+2|Milyen házimunkát szeret csinálni?|Which housework do you like doing?|Szeretek mosogatni és barkácsolni. (I like washing dishes and DIY.)
+2|Milyen házimunkát nem szeret csinálni?|Which housework don't you like doing?|Nem szeretek kertészkedni. (I don't like gardening.)
+2|Van takarítónője?|Do you have a cleaner?|Nincs takarítónőm. (I don't have a cleaner.)
+3|Szeret Hamiltonban élni?|Do you like living in Hamilton?|Igen, van egy házam Hamiltonban. Sok jó étterem van, és közel van Torontóhoz. (Yes, I have a house in Hamilton. There are many good restaurants and it's close to Toronto.)
+3|Mivel tölti a szabadidejét?|How do you spend your free time?|Általában zenét hallgatok, sok koncertre járok, gitározok és zongorázok. És szeretek festeni és rajzolni. (I usually listen to music, go to many concerts, play guitar and piano, and I like painting and drawing.)
+3|Járt már Magyarországon?|Have you been to Hungary yet?|Terveztem, de a covid miatt nem tudtam menni. De nagyon szeretnék Magyarországra utazni a jövőben. (I planned to, but couldn't because of covid. I'd really love to travel to Hungary in the future.)
+3|Mit visel ma?|What are you wearing today?|Ma viselek egy fekete-fehér ruhát. (Today I'm wearing a black-and-white dress.)
+3|Hogy mondjuk magyarul azt, hogy ‘apple’?|How do we say ‘apple’ in Hungarian?|Úgy mondjuk, hogy ‘alma’. (We say ‘alma’.)
+3|Mit jelent az, hogy ‘alma’?|What does ‘alma’ mean?|Azt jelenti, hogy ‘apple’. (It means ‘apple’.)
+C|Amerika / amerikai|America / American
+C|Anglia / angol|England / English
+C|Ausztrália / ausztrál|Australia / Australian
+C|Kanada / kanadai|Canada / Canadian
+C|Franciaország / francia|France / French
+C|Németország / német|Germany / German
+C|Olaszország / olasz|Italy / Italian
+C|Oroszország / orosz|Russia / Russian
+C|Horvátország / horvát|Croatia / Croatian
+C|Lengyelország / lengyel|Poland / Polish
+C|Románia / román|Romania / Romanian
+C|Csehország / cseh|Czech Republic / Czech
+C|Portugália / portugál|Portugal / Portuguese
+C|Hollandia / holland|Netherlands / Dutch
+C|Szerbia / szerb|Serbia / Serbian
+C|Magyarország / magyar|Hungary / Hungarian
+C|Svédország|Sweden
+C|Ukrajna|Ukraine
+C|Egyesült Királyság|United Kingdom
+D|január|January
+D|február|February
+D|március|March
+D|április|April
+D|május|May
+D|június|June
+D|július|July
+D|augusztus|August
+D|szeptember|September
+D|október|October
+D|november|November
+D|december|December
+D|hétfő|Monday
+D|kedd|Tuesday
+D|szerda|Wednesday
+D|csütörtök|Thursday
+D|péntek|Friday
+D|szombat|Saturday
+D|vasárnap|Sunday
+D|négy|four
+D|öt|five
+D|hat|six
+D|hét|seven (also week)
+D|nyolc|eight
+D|kilenc|nine
+D|első|first
+D|második|second
+D|harmadik|third
+D|negyedik|fourth
+D|ötödik|fifth
+D|hatodik|sixth
+D|hetedik|seventh
+D|nyolcadik|eighth
+D|kilencedik|ninth
+D|tizedik|tenth
+D|tegnap|yesterday
+D|ma|today
+D|holnap|tomorrow
+D|tegnapelőtt|day before yesterday
+D|holnapután|day after tomorrow
+D|reggel|morning
+D|délelőtt|late morning
+D|dél|noon
+D|este|evening
+D|éjfél|midnight
+D|korán|early
+D|késő|late
+D|tavasz|spring
+D|nyár|summer
+D|ősz|autumn
+D|tél|winter
+D|ez / az|this / that
+D|ezek / azok|these / those
+K|kabát|coat
+K|dzseki|jacket
+K|sál|scarf
+K|sapka|cap
+K|kesztyű|gloves
+K|ing|shirt
+K|öltöny|suit
+K|nyakkendő|tie
+K|szoknya|skirt
+K|zokni|socks
+K|csizma|boots
+K|szandál|sandals
+K|öv|belt
+K|felvesz|to put on
+K|levesz|to take off
+K|csíkos|striped
+K|kockás|checked
+K|lila|purple
+K|rózsaszín|pink
+K|narancssárga|orange
+K|citromsárga|yellow
+I|önéletrajz|CV / biography
+I|születési anyakönyvi kivonat|birth certificate
+I|diploma|diploma
+I|diplomáztam|I graduated
+I|születtem|I was born
+I|származás|origin
+I|alulírott|the undersigned
+I|emigrált|emigrated
+I|menekült|refugee
+I|háború|war
+I|költözni|to move (house)
+I|házasodni|to marry
+I|meghalt|died
+I|elhunyt|passed away
+I|állampolgárság|citizenship
+I|interjú|interview
+I|konzulátus|consulate
+I|egyetem|university
+I|főiskola|college
+I|iroda|office
+I|templom|church
+I|börtön|prison
+I|miniszterelnök|prime minister
+I|Országház|Parliament building
+I|Duna|Danube
+I|folyó|river
+I|híd|bridge
+I|nemzeti|national
+I|hagyományos|traditional
+I|híres|famous
+P|orvos|doctor
+P|fogorvos|dentist
+P|informatikus|IT specialist
+P|rendőr|police officer
+P|asszisztens|assistant
+P|családanya|stay-at-home mother
+P|takarító|cleaner
+P|üzletember|businessman
+P|egyetemista|university student
+P|fordító|translator
+P|költő|poet
+P|filmrendező|film director
+P|nyugdíjas|retired person
+A|okos|clever
+A|ügyes|skilful
+A|buta|silly
+A|csúnya|ugly
+A|sovány|thin
+A|kövér|fat
+A|szomorú|sad
+A|vidám|cheerful
+A|udvarias|polite
+A|türelmes|patient
+A|félénk|shy
+A|bátor|brave
+A|álmos|sleepy
+A|éhes|hungry
+A|szomjas|thirsty
+A|lusta|lazy
+A|ideges|nervous
+A|mérges|angry
+A|szorgalmas|hard-working
+A|egészséges|healthy
+A|koszos|dirty
+A|édes|sweet
+A|savanyú|sour
+A|keserű|bitter
+A|sós|salty
+A|drága|expensive
+A|olcsó|cheap
+A|érdekes|interesting
+A|unalmas|boring
+A|magas|tall
+A|alacsony|short (height)
+A|könnyű|easy
+A|rossz|bad
+A|jó|good
+V|gyógyítani|to heal
+V|tanítani|to teach
+V|nevelni|to raise (children)
+V|fordítani|to translate
+V|telefonálni|to phone
+V|üzletet kötni|to make a deal
+S|Azért tanulok magyarul, mert magyar állampolgár szeretnék lenni.|I'm learning Hungarian because I would like to become a Hungarian citizen.
+S|Magyar származású vagyok.|I'm of Hungarian origin.
+S|A szüleim magyarok.|My parents are Hungarian.
+S|Az anyukám 1963. július 18-án született.|My mother was born on 18 July 1963.
+S|Négyszer főzök egy héten.|I cook four times a week.
+S|Látom a kutyát.|I see the dog.
+S|Látok egy kutyát.|I see a dog.
+S|Van egy piros autóm.|I have a red car.
+S|Nincs sok kérdésem.|I don't have many questions.
+S|Az orvos embereket gyógyít.|The doctor heals people.
+S|Házakat és kerteket tervezek.|I design houses and gardens.
+S|Ma sapkát, sálat és kesztyűt viselek.|Today I'm wearing a cap, a scarf and gloves.
+S|Mennyibe kerül ez a táska?|How much does this bag cost?
+S|Köszönöm, remekül vagyok!|Thank you, I'm great!
+S|Elnézést, nem értem.|Sorry, I don't understand.
+S|Lassabban, legyen szíves!|Slower, please!
+S|Hogy mondják magyarul azt, hogy ‘chair’?|How do you say ‘chair’ in Hungarian?
+S|Kérdezhetek valamit?|May I ask you something?
+S|Nem tudom. / Fogalmam sincs.|I don't know. / I have no idea.
+S|Szerintem igen. / Szerintem nem.|I think so. / I don't think so.
+1|Hány éves?|How old are you?|Harmincnyolc éves vagyok. (I'm 38 years old.)
+1|Mikor van a születésnapja?|When is your birthday?|Augusztus huszonhetedikén van a születésnapom. (My birthday is on 27 August.)
+1|Hol született?|Where were you born?|… -ban/-ben születtem. (I was born in …)
+1|Hány testvére van?|How many siblings do you have?|Három testvérem van. (I have three siblings.)
+1|Miért tanul magyarul?|Why are you learning Hungarian?|Azért tanulok magyarul, mert magyar állampolgár szeretnék lenni. (…because I would like to become a Hungarian citizen.)
+1|Mi az anyanyelve?|What is your native language?|Az anyanyelvem angol. (My native language is English.)
+1|Milyen nemzetiségű?|What is your nationality?|Kanadai vagyok, de magyar származású. (I'm Canadian, but of Hungarian origin.)
+g1|Vowel harmony: how do I pick the vowel in an ending?|Back vowels (a á o ó u ú) take back endings; front vowels (e é i í ö ő ü ű) take front endings. Mixed words usually take back endings. Memory trick: AUTÓ = back, TENISZÜTŐ = front.|ház → házban; kert → kertben; iskola → iskolában
+g1|Which endings have three forms?|Many endings have a back/front pair. A few have a third form for words whose last vowel is ö ő ü ű (e.g. possessives, plural, object).|-ban/-ben; -ra/-re; -nak/-nek; -ok/-ek/-ök (plural); -ot/-et/-öt (object)
+g1|Long vowels and digraphs|Accents mark long vowels (á é í ó ő ú ű). cs, gy, ly, ny, sz, ty, zs are single letters. A doubled digraph is written with the first letter doubled.|sz + sz = ssz; gy + gy = ggy; zs + zs = zzs; húsz + szor = hússzor
+g2|Present tense: one form for now and the future|Hungarian has no continuous tense. The present covers “I do” and “I am doing”, and with a time word it also covers the future.|Éppen dolgozom. / Holnap telefonálok. (I'll call tomorrow.)
+g2|Indefinite vs definite conjugation|Use indefinite endings with no object or an indefinite one (egy, no article, a number, sok, hány). Use definite endings when the object is definite (a/az, my, a name, ezt/azt, kit).|Látok egy kutyát. / Látom a kutyát. / Szeretem Budapestet.
+g2|Indefinite endings (tanul)|Back verbs: -ok, -sz, (nothing), -unk, -tok, -nak. Front verbs use -ek, -sz, (nothing), -ünk, -tek, -nek.|tanulok, tanulsz, tanul, tanulunk, tanultok, tanulnak; szeretek, szeretsz, szeret
+g2|Definite endings (tanul)|Used with a definite object: -om, -od, -ja, -juk, -játok, -ják (back verbs). Verbs in -s, -sz, -z double the consonant in some forms.|tanulom, tanulod, tanulja, tanuljuk, tanuljátok, tanulják
+g2|The verb “to be” in the present|vagyok, vagy, van, vagyunk, vagytok, vannak. In the 3rd person it is dropped when you say who or what someone is or what they are like; it stays for location and existence.|Kati tanár. / Kati itthon van. / Ő szép. / Hol van?
+g2|“To be” in the past and future|Past: voltam, voltál, volt, voltunk, voltatok, voltak. Future: leszek, leszel, lesz, leszünk, lesztek, lesznek. Negate with nem.|Tegnap otthon voltam. / De lesz magyar állampolgárságom.
+g2|Negation: nem and nincs|Put nem directly before the verb (or the word you negate). “There is/I have no…” is nincs (nem + van), with the possessed noun.|Nem vagyok házas. / Nincs gyerekem. / Nincs takarítónőm.
+g2|Past tense (first person)|Take the infinitive, replace -ni with -t, add the ending: -tam/-tem (I), -tál/-tél (you), -t (he/she). Verbs with a linking vowel use -ott/-ett/-ött.|dolgozni → dolgoztam; menni → mentem; festeni → festettem; venni → vettem; enni → ettem; inni → ittam; születtem
+g2|The infinitive (-ni)|Add -ni to the 3rd person stem (-ik drops). Verbs ending in -t after a consonant or in -ít need a linking vowel. Irregular: van → lenni, megy → menni, eszik → enni, iszik → inni, alszik → aludni.|beszél → beszélni; úszik → úszni; mond → mondani; segít → segíteni
+g2|Modal verbs: tud, akar, szeret, szeretne|These take an infinitive. tud = can/know how to, akar = want, szeret = like, szeretne = would like. Kell (must) and lehet (may) do not conjugate.|Tudok gitározni. / Szeretnék orvos lenni. / Itt nem lehet bemenni.
+g2|Using ‘vagyok’ with jobs and origin|Say the job with no article. To say you work as something use -ként; to say a language, use -ul/-ül.|Tanár vagyok. / Tanárként dolgozom. / Beszélek magyarul.
+g3|Articles|The: a before a consonant, az before a vowel. A/an: always egy. Hungarian often drops the indefinite article, e.g. with professions.|a ház, az autó, egy alma; Mérnök vagyok.
+g3|Plural: -k|Add -k with a linking vowel by harmony: -ok/-ak (back), -ek (front), -ök (ö ő ü ű). After a vowel just -k; final a/e lengthen to á/é.|ház → házak; kert → kertek; macska → macskák; iskola → iskolák
+g3|Singular after numbers|After a number, sok, néhány or hány?, the noun stays singular.|két öcsém; három macska; sok macska; Hány macskád van?
+g3|Adjectives and the plural|An adjective before a noun never takes -k. After “to be” with a plural subject it takes -k/-ak/-ek.|piros autók; Az autók pirosak. / Azok a házak szépek.
+g3|Direct object: -t|Add -t, with a linking vowel after most consonants (-ot/-at/-et/-öt). After a vowel or l, ly, j, n, ny, r, s, sz, z, zs just -t.|kávé → kávét; könyv → könyvet; ház → házat; pénz → pénzt; Szeretem Budapestet.
+g3|Indirect object and “X has Y”: -nak/-nek|-nak/-nek means to/for someone. It also marks the owner in “X has Y” (the owned noun takes a possessive ending).|Kinek segítesz? A kolléganőmnek. / A gyereknek van játéka.
+g3|With / by: -val/-vel|After a vowel: -val/-vel. After a consonant the v becomes that consonant, doubling it.|autóval; busszal; kanállal; Tamarával; Pammel; a férjemmel
+g3|Possessive endings: vowel-ending nouns|my/your/his-her/our/your (pl.)/their: -m, -d, -ja/-je, -nk, -tok/-tek/-tök, -juk/-jük. The vowel is lengthened (a → á).|kutya → kutyám, kutyád, kutyája, kutyánk, kutyátok, kutyájuk
+g3|Possessive endings: consonant-ending nouns|Back: -om, -od, -a/-ja, -unk, -otok, -uk/-juk. Front: -em, -ed, -e/-je, -ünk, -etek, -ük/-jük.|család → családom, családod, családja…; kert → kertem, kerted, kertje, kertünk, kertetek, kertjük
+g3|My (plural things): -aim / -eim|Several possessed things: -ai-/-ei- before the person ending. Back/mixed words use -ai-, front words -ei-.|házaim, házaid; testvéreim, testvérei, testvéreink; macskáim
+g3|Possessor comes first|The owner goes before the owned noun and the owned noun takes the ending. Having something: van + noun with possessive ending; not having: nincs.|a férjem neve; a fiú kutyája; Van autóm. / Nincs lakásom.
+g3|Word-building suffixes|-s makes adjectives (hír → híres); -i makes origin adjectives (Amerika → amerikai); -ó/-ő makes jobs, tools, places (fest → festő); -ás/-és turns verbs into nouns (kérdez → kérdés); -ság/-ség makes abstract nouns (barát → barátság); -zik makes verbs (dolog → dolgozik).|testvér = test + vér; nagymama = nagy + mama; nyomtat → nyomtató
+g4|Where? Inside: -ban/-ben|Countries, cities, buildings and 3D objects. Exceptions: Magyarország and many Hungarian towns use -on/-en/-ön.|Kanadában; Hamiltonban; iskolában; étteremben
+g4|Where? On / at: -on/-en/-ön|Open spaces, surfaces, events, some institutions, Hungary and most Hungarian towns.|Budapesten; Magyarországon; koncerten; az asztalon; munkahelyen
+g4|Where to / where / where from: three-way systems|Inside: -ba/-be → -ban/-ben → -ból/-ből. On/event: -ra/-re → -on/-en/-ön → -ról/-ről. Persons/next to: -hoz/-hez/-höz → -nál/-nél → -tól/-től. Final a/e lengthen.|iskolába/-ban/-ból; koncertre/-en/-ről; orvoshoz/-nál/-tól
+g4|Place words after the noun|Hungarian uses postpositions placed after the noun: mögött (behind), előtt (in front of), alatt (under), fölött (above), mellett (next to), között (between).|apa mögött; anya mellett; az asztal alatt
+g4|When? Days, clock, months, seasons|Days: -n/-on/-en/-ön; clock: -kor; months: -ban/-ben; seasons: tavasszal, nyáron, ősszel, télen; day parts take no ending.|hétfőn; nyolc órakor; fél nyolckor; júliusban; reggel, este
+g4|Before, after, since, until|előtt = before; után = after; óta = since; -tól/-től … -ig = from … until.|ebéd előtt; ebéd után; 2004 óta; hétfőtől péntekig; 8 órától 16 óráig
+g4|Dates: -a/-e vs -án/-én|Use ordinals. “Which date is it?” ends -a/-e; “on which date?” ends -án/-én. First is elseje/elsején.|Október negyedike van. / 1988. augusztus 27-én (huszonhetedikén) születtem.
+g4|Telling the time|Hungarian counts toward the next hour: negyed három = 2:15, fél három = 2:30, háromnegyed három = 2:45. Ask: Hány óra van? / Mennyi az idő?|negyed három; fél három; háromnegyed három
+g4|How often?|Use -szor/-szer/-ször for times; naponta, hetente, havonta, évente for daily, weekly, monthly, yearly. Mindig, gyakran, néha, soha for always, often, sometimes, never.|Négyszer főzök egy héten. / Havonta egyszer van takarítónőm.
+g5|Numbers 1 to 10, 100, 1000|egy, kettő (két before a noun), három, négy, öt, hat, hét, nyolc, kilenc, tíz; száz, ezer, tízezer, millió.|két öcs, but Kettő van. / harmincnyolc éves
+g5|Ordinals|első, második, harmadik, negyedik, ötödik, hatodik, hetedik, nyolcadik, kilencedik, tizedik. Add -dik to most numbers.|az ötödik gyerek; a harmadik emelet
+g5|Question words|Ki? who; Mi? what; Kit? Mit? who/what (object); Kivel? with whom; Kinek? to/for whom; Milyen? what kind; Melyik? which; Hol? Hova? Honnan? where, where to, where from; Mikor? when; Miért? why; Hány? how many; Mennyi? how much.|Ki ez a férfi? / Milyen nyelven beszél? / Hol él?
+g5|Hány? vs Mennyi?|Hány asks about countable things and is followed by a singular noun. Mennyi asks about amounts you can't count.|Hány testvére van? / Mennyi vizet iszol?
+g5|Yes/no questions|No special word is needed: keep the sentence and raise your voice at the end. Answer Igen, … or Nem, …|Kati magyar? Igen, Kati magyar. / Van testvére?
+g5|Formal vs informal “you”|Te (informal) uses 2nd person verbs; Ön (formal) uses 3rd person verbs and Önök the 3rd plural. Hogy vagy? is informal, Hogy van? is formal.|Mi a neved? / Mi a neve? Hol élsz? / Hol él?
+g5|Dropping the pronoun|The verb ending shows the person, so én, te, mi, ti are usually dropped unless you want emphasis.|Magyarul tanulok. / Én tanulok japánul, nem Éva.
+g5|Word order: focus before the verb|The most important word goes right before the verb; the verb itself can be stressed. Negative nem goes directly before the verb or focus.|Holnap telefonálok (nem ma). / Nem járok színházba.
+g5|Modal verbs and prefixes in word order|A modal verb is usually followed by the infinitive. A verb prefix usually goes after the verb in a neutral sentence.|Szeretnék enni. / Megyek aludni. / 8 órakor kelek fel.
+g5|Linking sentences|és = and; de = but; vagy = or; mert = because; hogy = that; hanem = but rather. aki = who, ami = which/what, ahol = where, amikor = when.|Nem újságíró vagyok, hanem tanár. / Van egy barátom, aki kék inget visel.
+g5|Pronouns|én, te, ő/Ön, mi, ti, ők/Önök. This/that: ez/az; these/those: ezek/azok.|Ez egy magyar kokárda. / Ezek az autók pirosak.`;
+const CN={F:"Family",P:"People & jobs",A:"Describing",T:"Time & weather",H:"Home & things",E:"Food & drink",V:"Verbs",W:"Places",G:"Words, endings, verb forms",S:"Sentences",1:"Questions: About you",2:"Questions: Work & daily life",3:"Questions: Free time & Hungary",C:"Countries & nationalities",D:"Dates, numbers & time",K:"Clothes & colors",I:"Interview & citizenship",g1:"Grammar: Sounds & harmony",g2:"Grammar: Verbs",g3:"Grammar: Nouns & endings",g4:"Grammar: Place & time",g5:"Grammar: Questions & sentences"};
+const sz=t=>t.length>70?"s2":t.length>28?"s1":"";
+const D=RAW.split("\n").map(l=>{const[c,h,e,a]=l.split("|");return{c:CN[c],h,e,a}});
+const isG=x=>x.c.startsWith("Grammar");
+const cats=["All",...new Set(D.filter(x=>!isG(x)).map(x=>x.c))];
+const gcats=["All",...new Set(D.filter(isG).map(x=>x.c))];
+const S={cat:"All",dir:"hu",mode:"cards",hide:false,i:0,flip:false,deck:[],q:null};
+let known=new Set();
+try{known=new Set(JSON.parse(localStorage.getItem("hu-known-lessons")||"[]"))}catch(e){}
+const save=()=>{try{localStorage.setItem("hu-known-lessons",JSON.stringify([...known]))}catch(e){}};
+const shuf=a=>a.sort(()=>Math.random()-.5);
+const front=x=>isG(x)||S.dir=="hu"?x.h:x.e, back=x=>isG(x)||S.dir=="hu"?x.e:x.h;
+const inCat=y=>S.cat=="All"||y.c==S.cat;
+const pool=()=>D.filter(x=>(S.mode=="grammar")==isG(x)&&inCat(x)&&!(S.hide&&known.has(x.h)));
+function build(sh){S.deck=pool();if(sh)shuf(S.deck);S.i=0;S.flip=false}
+function startQuiz(){
+  const p=shuf(pool()).slice(0,10);
+  S.q=p.length?{items:p.map(x=>{const o=shuf(D.filter(y=>y!==x&&y.c==x.c)).slice(0,3);o.push(x);return{x,o:shuf(o)}}),n:0,s:0,p:null}:null;
+}
+function cardsV(){
+  const d=S.deck;
+  if(!d.length)return `<p class="empty">No cards to show. Pick another category or switch back to showing all cards.</p>`;
+  const x=d[S.i],t=D.filter(y=>inCat(y)&&(S.mode=="grammar")==isG(y)),k=t.filter(y=>known.has(y.h)).length;
+  return `<p class="meta">Card ${S.i+1} of ${d.length}. You've learned ${k} of ${t.length} in this set.</p>
+  <div id="card" class="card ${S.flip?"flip":""}" data-a="flip" tabindex="0" role="button" aria-label="Flip card">
+    <div class="face front"><span class="w ${sz(front(x))}">${front(x)}</span></div>
+    <div class="face back"><span class="w ${sz(back(x))}">${back(x)}</span>${x.a?`<div class="ans">${x.a}</div>`:""}<small>${x.c}</small></div></div>
+  <div class="row"><button class="btn no" data-a="again">Still learning</button><button class="btn go" data-a="got">Got it</button></div>
+  <p class="hint">Tap the card to flip it. ${S.mode=="grammar"?"":`<button class="link" data-a="say">Hear the Hungarian</button>`}</p>`;
+}
+function quizV(){
+  const q=S.q;
+  if(!q)return `<p class="empty">Nothing to quiz on here. The quiz covers vocab, sentences and questions (grammar is in the Grammar tab). Pick another category or show all cards.</p>`;
+  if(q.n>=q.items.length)return `<div class="done"><p class="w">${q.s} of ${q.items.length}</p><p>${q.s==q.items.length?"A perfect round.":"Review the misses in flashcards, then go again."}</p><button class="btn go" data-a="retry" style="width:100%">New round</button></div>`;
+  const it=q.items[q.n],x=it.x;
+  const o=it.o.map((y,j)=>{let c="opt";if(q.p!==null){if(y===x)c+=" ok";else if(j==q.p)c+=" bad"}return `<button class="${c}" data-a="pick" data-v="${j}" ${q.p!==null?"disabled":""}>${back(y)}</button>`}).join("");
+  return `<p class="meta">Question ${q.n+1} of ${q.items.length}. Score: ${q.s}.</p><div class="qs"><span class="w ${sz(front(x))}">${front(x)}</span></div><div class="o2">${o}</div>`+(q.p!==null?`<button class="btn go" data-a="next" style="width:100%">Next</button>`:"");
+}
+function render(){
+  const tabs=[["cards","Flashcards"],["quiz","Quiz"],["grammar","Grammar"]].map(([m,l])=>`<button class="chip ${m==S.mode?"on":""}" data-a="mode" data-v="${m}">${l}</button>`).join("");
+  const chips=(S.mode=="grammar"?gcats:cats).map(c=>`<button class="chip ${c==S.cat?"on":""}" data-a="cat" data-v="${c}">${c}</button>`).join("");
+  const opts=`${S.mode=="grammar"?"":`<button class="link" data-a="dir">${S.dir=="hu"?"Hungarian to English":"English to Hungarian"}</button>`}<button class="link" data-a="shuf">Shuffle</button><button class="link" data-a="hide">${S.hide?"Hiding learned cards":"Showing all cards"}</button>`;
+  document.getElementById("app").innerHTML=`<div class="chips">${tabs}</div><div class="chips">${chips}</div><div class="opts">${opts}</div>`+(S.mode=="quiz"?quizV():cardsV());
+}
+function reset(sh){if(S.mode=="quiz")startQuiz();else build(sh);render()}
+function advance(gotIt){
+  const x=S.deck[S.i];
+  if(gotIt)known.add(x.h);else known.delete(x.h);save();
+  if(gotIt&&S.hide){S.deck.splice(S.i,1);if(S.i>=S.deck.length)S.i=0}
+  else S.i=(S.i+1)%S.deck.length;
+  S.flip=false;render();
+}
+function act(b){
+  const a=b.dataset.a,v=b.dataset.v;
+  if(a=="cat"){S.cat=v;reset(false)}
+  else if(a=="mode"){S.mode=v;S.cat="All";reset(false)}
+  else if(a=="dir"){S.dir=S.dir=="hu"?"en":"hu";S.flip=false;reset(false)}
+  else if(a=="shuf")reset(true);
+  else if(a=="hide"){S.hide=!S.hide;reset(false)}
+  else if(a=="flip"){S.flip=!S.flip;document.getElementById("card").classList.toggle("flip")}
+  else if(a=="got")advance(true);
+  else if(a=="again")advance(false);
+  else if(a=="say"){try{const u=new SpeechSynthesisUtterance(S.deck[S.i].h);u.lang="hu-HU";speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+  else if(a=="pick"){const q=S.q;q.p=+v;if(q.items[q.n].o[q.p]===q.items[q.n].x)q.s++;render()}
+  else if(a=="next"){S.q.n++;S.q.p=null;render()}
+  else if(a=="retry"){startQuiz();render()}
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(b)act(b)});
+document.addEventListener("keydown",e=>{if((e.key=="Enter"||e.key==" ")&&e.target.id=="card"){e.preventDefault();act(e.target)}});
+build(false);render();
+</script></body></html>
